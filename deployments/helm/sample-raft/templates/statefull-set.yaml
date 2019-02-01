@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sample-raft
+spec:
+  selector:
+    matchLabels:
+      app: sample-raft # has to match .spec.template.metadata.labels
+  serviceName: sample-raft
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: sample-raft # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: sample-raft
+        image: docker-registry.default.svc:5000/clustering-go/sample-raft:latest
+        imagePullPolicy: Always
+        ports:
+        - name: 7948-tcp
+          containerPort: 7948
+          protocol: TCP
+        - name: 8046-tcp
+          containerPort: 8046
+          protocol: TCP
+        env:
+        - name: CLUSTER_ADDRS
+          value: sample-raft-0.sample-raft:7948,sample-raft-1.sample-raft:7948,sample-raft-2.sample-raft:7948
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+  creationTimestamp: null
+  labels:
+    app: sample-raft
+  name: sample-raft-api
+spec:
+  sessionAffinity: None
+  type: ClusterIP
+  ports:
+  - name: 8046-tcp
+    port: 8046
+    protocol: TCP
+    targetPort: 8046
+  selector:
+    app: sample-raft
